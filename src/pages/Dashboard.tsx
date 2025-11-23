@@ -1,8 +1,5 @@
 import { useState } from "react";
-import { Search, FileText, Network, AlertTriangle, TrendingUp } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Search, Scale, AlertTriangle, TrendingUp, ChevronRight, Clock, Gavel, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 
@@ -10,180 +7,227 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const stats = [
-    { label: "Total Cases", value: "24,891", icon: FileText, color: "text-legal-blue" },
-    { label: "Contradictions Found", value: "342", icon: AlertTriangle, color: "text-warning" },
-    { label: "Knowledge Graph Nodes", value: "89,432", icon: Network, color: "text-success" },
-    { label: "Research Time Saved", value: "76%", icon: TrendingUp, color: "text-legal-gold" },
-  ];
+  const featuredCase = {
+    id: "2",
+    title: "Tech Corp. v. Innovation LLC",
+    court: "Ninth Circuit Court of Appeals",
+    date: "Nov 10, 2024",
+    excerpt: "The court held that algorithmic trade secrets are subject to different standards of protection under the DTSA when the algorithm's output is publicly observable...",
+    tags: ["Trade Secrets", "Technology", "Appeals"],
+    contradictions: 3,
+    citations: 47,
+  };
 
   const recentCases = [
-    {
-      id: "1",
-      title: "Smith v. Jones",
-      court: "Supreme Court",
-      date: "2024-11-15",
-      similarity: 0.89,
-      status: "Similar to 12 cases",
-    },
-    {
-      id: "2",
-      title: "Tech Corp. v. Innovation LLC",
-      court: "Court of Appeals",
-      date: "2024-11-10",
-      similarity: 0.76,
-      status: "Contradiction detected",
-      hasContradiction: true,
-    },
-    {
-      id: "3",
-      title: "State v. Johnson",
-      court: "District Court",
-      date: "2024-11-08",
-      similarity: 0.92,
-      status: "High precedent value",
-    },
+    { id: "1", title: "Smith v. Jones", court: "Supreme Court", jurisdiction: "Federal", status: "89% match" },
+    { id: "3", title: "State v. Johnson", court: "District Court", jurisdiction: "CA", status: "92% match" },
+    { id: "case-001", title: "Williams v. DataCorp", court: "Court of Appeals", jurisdiction: "NY", status: "High precedent" },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-12 w-12 rounded-lg bg-gradient-legal flex items-center justify-center">
-              <Network className="h-6 w-6 text-white" />
-            </div>
+    <div className="min-h-screen bg-background">
+      {/* Masthead */}
+      <div className="border-b-4 border-legal-navy bg-background">
+        <div className="container mx-auto px-6 py-6 max-w-7xl">
+          <div className="flex items-end justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-foreground">LexLink</h1>
-              <p className="text-muted-foreground">Intelligent Knowledge Graphs for Legal Research</p>
+              <div className="flex items-center gap-3 mb-1">
+                <Scale className="h-8 w-8 text-legal-navy" />
+                <h1 className="text-5xl font-serif font-bold text-legal-navy tracking-tight">LexLink</h1>
+              </div>
+              <p className="text-sm uppercase tracking-widest text-muted-foreground font-mono">
+                Intelligent Legal Research · Knowledge Graphs · AI Analysis
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-xs uppercase tracking-wider text-muted-foreground mb-1">Today</div>
+              <div className="text-lg font-serif font-bold text-foreground">November 23, 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Hero */}
+      <div className="bg-legal-navy text-white">
+        <div className="container mx-auto px-6 py-12 max-w-7xl">
+          <div className="max-w-3xl">
+            <h2 className="text-3xl font-serif font-bold mb-4">Search the Knowledge Graph</h2>
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
+              <input
+                type="text"
+                placeholder="Enter case name, citation, or legal concept..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-14 pl-12 pr-4 bg-white/10 border-2 border-white/20 rounded-none text-white placeholder:text-white/50 focus:bg-white/15 focus:border-legal-gold focus:outline-none text-lg transition-all"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-6 py-12 max-w-7xl">
+        {/* Main Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          {/* Featured Case - Takes 2 columns */}
+          <div className="lg:col-span-2">
+            <div className="mb-2 flex items-center gap-2">
+              <div className="h-1 w-12 bg-legal-gold"></div>
+              <span className="text-xs uppercase tracking-widest font-mono text-muted-foreground">Featured Analysis</span>
+            </div>
+            <div 
+              className="border-l-8 border-legal-gold bg-card p-8 cursor-pointer hover:shadow-2xl transition-shadow group"
+              onClick={() => navigate(`/case/${featuredCase.id}`)}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <h2 className="text-3xl font-serif font-bold text-foreground mb-2 group-hover:text-legal-blue transition-colors">
+                    {featuredCase.title}
+                  </h2>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <span className="font-medium">{featuredCase.court}</span>
+                    <span>·</span>
+                    <span>{featuredCase.date}</span>
+                  </div>
+                </div>
+                {featuredCase.contradictions > 0 && (
+                  <Badge variant="destructive" className="gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {featuredCase.contradictions} Conflicts
+                  </Badge>
+                )}
+              </div>
+              
+              <p className="text-foreground/80 mb-6 leading-relaxed text-lg">
+                {featuredCase.excerpt}
+              </p>
+
+              <div className="flex items-center justify-between">
+                <div className="flex gap-2">
+                  {featuredCase.tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="rounded-none font-mono text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span>{featuredCase.citations} citations</span>
+                  <ChevronRight className="h-4 w-4" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Column */}
+          <div className="space-y-6">
+            <div className="mb-2 flex items-center gap-2">
+              <div className="h-1 w-12 bg-legal-blue"></div>
+              <span className="text-xs uppercase tracking-widest font-mono text-muted-foreground">System Metrics</span>
+            </div>
+
+            <div className="bg-legal-navy text-white p-6">
+              <div className="text-4xl font-serif font-bold mb-1">24,891</div>
+              <div className="text-sm uppercase tracking-wider text-white/70">Total Cases Indexed</div>
+            </div>
+
+            <div className="bg-card border-2 border-destructive p-6">
+              <div className="text-4xl font-serif font-bold text-destructive mb-1">342</div>
+              <div className="text-sm uppercase tracking-wider text-muted-foreground">Contradictions Detected</div>
+            </div>
+
+            <div className="bg-card border-2 border-success p-6">
+              <div className="text-4xl font-serif font-bold text-success mb-1">89,432</div>
+              <div className="text-sm uppercase tracking-wider text-muted-foreground">Graph Nodes</div>
+            </div>
+
+            <div className="bg-legal-gold/10 border-2 border-legal-gold p-6">
+              <div className="text-4xl font-serif font-bold text-legal-gold mb-1">76%</div>
+              <div className="text-sm uppercase tracking-wider text-muted-foreground">Research Time Saved</div>
             </div>
           </div>
         </div>
 
-        {/* Search Bar */}
-        <Card className="mb-8 border-2 shadow-lg">
-          <CardContent className="pt-6">
-            <div className="flex gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  placeholder="Search cases, statutes, or legal concepts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-12 text-lg"
-                />
+        {/* Recent Cases - Newspaper Style */}
+        <div className="mb-12">
+          <div className="mb-4 flex items-center gap-2">
+            <div className="h-1 w-12 bg-legal-blue"></div>
+            <span className="text-xs uppercase tracking-widest font-mono text-muted-foreground">Recent Activity</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {recentCases.map((case_) => (
+              <div
+                key={case_.id}
+                onClick={() => navigate(`/case/${case_.id}`)}
+                className="bg-card border-l-4 border-legal-blue p-6 cursor-pointer hover:shadow-lg transition-all group"
+              >
+                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-mono">
+                  {case_.jurisdiction}
+                </div>
+                <h3 className="text-xl font-serif font-bold mb-2 group-hover:text-legal-blue transition-colors">
+                  {case_.title}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-3">{case_.court}</p>
+                <div className="flex items-center justify-between">
+                  <Badge variant="secondary" className="rounded-none text-xs">
+                    {case_.status}
+                  </Badge>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
               </div>
-              <Button size="lg" className="px-8 bg-gradient-legal hover:opacity-90">
-                Search
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="hover:shadow-lg transition-shadow">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {stat.label}
-                </CardTitle>
-                <stat.icon className={`h-5 w-5 ${stat.color}`} />
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">{stat.value}</div>
-              </CardContent>
-            </Card>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* Recent Cases */}
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl">Recent Case Analysis</CardTitle>
-            <CardDescription>
-              Latest cases processed through semantic analysis and contradiction detection
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentCases.map((case_) => (
-                <div
-                  key={case_.id}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/5 transition-colors cursor-pointer"
-                  onClick={() => navigate(`/case/${case_.id}`)
-                  }
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-lg">{case_.title}</h3>
-                      {case_.hasContradiction && (
-                        <Badge variant="destructive" className="gap-1">
-                          <AlertTriangle className="h-3 w-3" />
-                          Contradiction
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{case_.court}</span>
-                      <span>•</span>
-                      <span>{case_.date}</span>
-                      <span>•</span>
-                      <span className="text-success font-medium">
-                        {Math.round(case_.similarity * 100)}% similarity score
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <Badge variant="secondary">{case_.status}</Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-legal-blue"
+        {/* Tools Section - Horizontal Blocks */}
+        <div className="mb-4 flex items-center gap-2">
+          <div className="h-1 w-12 bg-legal-gold"></div>
+          <span className="text-xs uppercase tracking-widest font-mono text-muted-foreground">Research Tools</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+          <div 
             onClick={() => navigate("/case/case-001")}
+            className="bg-legal-navy text-white p-8 cursor-pointer hover:bg-legal-blue transition-colors group"
           >
-            <CardHeader>
-              <FileText className="h-8 w-8 text-legal-blue mb-2" />
-              <CardTitle>Document Summarization</CardTitle>
-              <CardDescription>
-                Generate AI-powered summaries preserving legal reasoning and citations
-              </CardDescription>
-            </CardHeader>
-          </Card>
+            <BookOpen className="h-10 w-10 mb-4 text-legal-gold" />
+            <h3 className="text-2xl font-serif font-bold mb-2">Document Summarization</h3>
+            <p className="text-white/70 text-sm mb-4">
+              AI-powered summaries with Legal-BERT, preserving citations and reasoning
+            </p>
+            <div className="flex items-center gap-2 text-legal-gold font-mono text-sm">
+              <span>Analyze</span>
+              <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
 
-          <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-success"
+          <div 
             onClick={() => navigate("/knowledge-graph")}
+            className="bg-success text-white p-8 cursor-pointer hover:bg-success/90 transition-colors group"
           >
-            <CardHeader>
-              <Network className="h-8 w-8 text-success mb-2" />
-              <CardTitle>Knowledge Graph</CardTitle>
-              <CardDescription>
-                Explore case relationships and precedent chains using Neo4j
-              </CardDescription>
-            </CardHeader>
-          </Card>
+            <Gavel className="h-10 w-10 mb-4 text-white" />
+            <h3 className="text-2xl font-serif font-bold mb-2">Knowledge Graph</h3>
+            <p className="text-white/90 text-sm mb-4">
+              Explore precedent chains and case relationships via Neo4j
+            </p>
+            <div className="flex items-center gap-2 text-white font-mono text-sm">
+              <span>Explore</span>
+              <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
 
-          <Card 
-            className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-warning"
+          <div 
             onClick={() => navigate("/case/case-002")}
+            className="bg-destructive text-white p-8 cursor-pointer hover:bg-destructive/90 transition-colors group"
           >
-            <CardHeader>
-              <AlertTriangle className="h-8 w-8 text-warning mb-2" />
-              <CardTitle>Contradiction Detection</CardTitle>
-              <CardDescription>
-                Identify conflicting rulings across jurisdictions and time periods
-              </CardDescription>
-            </CardHeader>
-          </Card>
+            <AlertTriangle className="h-10 w-10 mb-4 text-white" />
+            <h3 className="text-2xl font-serif font-bold mb-2">Contradiction Detection</h3>
+            <p className="text-white/90 text-sm mb-4">
+              Identify conflicting rulings across jurisdictions using NLI models
+            </p>
+            <div className="flex items-center gap-2 text-white font-mono text-sm">
+              <span>Detect</span>
+              <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
