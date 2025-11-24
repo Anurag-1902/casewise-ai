@@ -2,27 +2,29 @@ import { useState } from "react";
 import { Search, Scale, AlertTriangle, TrendingUp, ChevronRight, Clock, Gavel, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-  const featuredCase = {
-    id: "2",
-    title: "Tech Corp. v. Innovation LLC",
-    court: "Ninth Circuit Court of Appeals",
-    date: "Nov 10, 2024",
-    excerpt: "The court held that algorithmic trade secrets are subject to different standards of protection under the DTSA when the algorithm's output is publicly observable...",
-    tags: ["Trade Secrets", "Technology", "Appeals"],
-    contradictions: 3,
-    citations: 47,
-  };
+  const { data: cases, isLoading } = useQuery({
+    queryKey: ['legal-cases'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('legal_cases')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
-  const recentCases = [
-    { id: "1", title: "Smith v. Jones", court: "Supreme Court", jurisdiction: "Federal", status: "89% match" },
-    { id: "3", title: "State v. Johnson", court: "District Court", jurisdiction: "CA", status: "92% match" },
-    { id: "case-001", title: "Williams v. DataCorp", court: "Court of Appeals", jurisdiction: "NY", status: "High precedent" },
-  ];
+  const featuredCase = cases?.[0];
+  const recentCases = cases?.slice(1, 4) || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -75,47 +77,55 @@ const Dashboard = () => {
               <div className="h-1 w-12 bg-legal-gold"></div>
               <span className="text-xs uppercase tracking-widest font-mono text-muted-foreground">Featured Analysis</span>
             </div>
-            <div 
-              className="border-l-8 border-legal-gold bg-card p-8 cursor-pointer hover:shadow-2xl transition-shadow group"
-              onClick={() => navigate(`/case/${featuredCase.id}`)}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h2 className="text-3xl font-serif font-bold text-foreground mb-2 group-hover:text-legal-blue transition-colors">
-                    {featuredCase.title}
-                  </h2>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <span className="font-medium">{featuredCase.court}</span>
-                    <span>·</span>
-                    <span>{featuredCase.date}</span>
+            {isLoading ? (
+              <div className="border-l-8 border-legal-gold bg-card p-8">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-8 bg-muted rounded w-3/4"></div>
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
+                  <div className="h-20 bg-muted rounded"></div>
+                </div>
+              </div>
+            ) : featuredCase ? (
+              <div 
+                className="border-l-8 border-legal-gold bg-card p-8 cursor-pointer hover:shadow-2xl transition-shadow group"
+                onClick={() => navigate(`/case/${featuredCase.id}`)}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h2 className="text-3xl font-serif font-bold text-foreground mb-2 group-hover:text-legal-blue transition-colors">
+                      {featuredCase.name}
+                    </h2>
+                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <span className="font-medium">{featuredCase.court}</span>
+                      <span>·</span>
+                      <span>{featuredCase.decision_date ? new Date(featuredCase.decision_date).toLocaleDateString() : 'N/A'}</span>
+                    </div>
                   </div>
                 </div>
-                {featuredCase.contradictions > 0 && (
-                  <Badge variant="destructive" className="gap-1">
-                    <AlertTriangle className="h-3 w-3" />
-                    {featuredCase.contradictions} Conflicts
-                  </Badge>
-                )}
-              </div>
-              
-              <p className="text-foreground/80 mb-6 leading-relaxed text-lg">
-                {featuredCase.excerpt}
-              </p>
+                
+                <p className="text-foreground/80 mb-6 leading-relaxed text-lg">
+                  {featuredCase.preview?.[0] || featuredCase.name_abbreviation || 'No preview available'}
+                </p>
 
-              <div className="flex items-center justify-between">
-                <div className="flex gap-2">
-                  {featuredCase.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="rounded-none font-mono text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <span>{featuredCase.citations} citations</span>
-                  <ChevronRight className="h-4 w-4" />
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-2">
+                    {featuredCase.jurisdiction && (
+                      <Badge variant="secondary" className="rounded-none font-mono text-xs">
+                        {featuredCase.jurisdiction}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>{featuredCase.citation || 'View case'}</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="border-l-8 border-legal-gold bg-card p-8 text-center">
+                <p className="text-muted-foreground">No cases available yet. Add your Case.Law API key to start importing data.</p>
+              </div>
+            )}
           </div>
 
           {/* Stats Column */}
@@ -126,7 +136,7 @@ const Dashboard = () => {
             </div>
 
             <div className="bg-legal-navy text-white p-6">
-              <div className="text-4xl font-serif font-bold mb-1">24,891</div>
+              <div className="text-4xl font-serif font-bold mb-1">{cases?.length || 0}</div>
               <div className="text-sm uppercase tracking-wider text-white/70">Total Cases Indexed</div>
             </div>
 
@@ -154,27 +164,43 @@ const Dashboard = () => {
             <span className="text-xs uppercase tracking-widest font-mono text-muted-foreground">Recent Activity</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recentCases.map((case_) => (
-              <div
-                key={case_.id}
-                onClick={() => navigate(`/case/${case_.id}`)}
-                className="bg-card border-l-4 border-legal-blue p-6 cursor-pointer hover:shadow-lg transition-all group"
-              >
-                <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-mono">
-                  {case_.jurisdiction}
+            {isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-card border-l-4 border-legal-blue p-6">
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-3 bg-muted rounded w-1/4"></div>
+                    <div className="h-5 bg-muted rounded w-3/4"></div>
+                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-serif font-bold mb-2 group-hover:text-legal-blue transition-colors">
-                  {case_.title}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-3">{case_.court}</p>
-                <div className="flex items-center justify-between">
-                  <Badge variant="secondary" className="rounded-none text-xs">
-                    {case_.status}
-                  </Badge>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              ))
+            ) : recentCases.length > 0 ? (
+              recentCases.map((case_) => (
+                <div
+                  key={case_.id}
+                  onClick={() => navigate(`/case/${case_.id}`)}
+                  className="bg-card border-l-4 border-legal-blue p-6 cursor-pointer hover:shadow-lg transition-all group"
+                >
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2 font-mono">
+                    {case_.jurisdiction || 'N/A'}
+                  </div>
+                  <h3 className="text-xl font-serif font-bold mb-2 group-hover:text-legal-blue transition-colors">
+                    {case_.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mb-3">{case_.court || 'Unknown Court'}</p>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="secondary" className="rounded-none text-xs">
+                      {case_.citation || 'View case'}
+                    </Badge>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-8 text-muted-foreground">
+                No recent cases available
               </div>
-            ))}
+            )}
           </div>
         </div>
 
