@@ -14,7 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      legal_cases: {
+        Row: {
+          analysis: Json | null
+          case_id: string
+          citation: string | null
+          citations: Json | null
+          court: string | null
+          court_info: Json | null
+          created_at: string | null
+          decision_date: string | null
+          docket_number: string | null
+          first_page: string | null
+          frontend_url: string | null
+          id: string
+          jurisdiction: string | null
+          last_page: string | null
+          name: string
+          name_abbreviation: string | null
+          preview: string[] | null
+          reporter: Json | null
+          updated_at: string | null
+          url: string | null
+          volume: Json | null
+        }
+        Insert: {
+          analysis?: Json | null
+          case_id: string
+          citation?: string | null
+          citations?: Json | null
+          court?: string | null
+          court_info?: Json | null
+          created_at?: string | null
+          decision_date?: string | null
+          docket_number?: string | null
+          first_page?: string | null
+          frontend_url?: string | null
+          id?: string
+          jurisdiction?: string | null
+          last_page?: string | null
+          name: string
+          name_abbreviation?: string | null
+          preview?: string[] | null
+          reporter?: Json | null
+          updated_at?: string | null
+          url?: string | null
+          volume?: Json | null
+        }
+        Update: {
+          analysis?: Json | null
+          case_id?: string
+          citation?: string | null
+          citations?: Json | null
+          court?: string | null
+          court_info?: Json | null
+          created_at?: string | null
+          decision_date?: string | null
+          docket_number?: string | null
+          first_page?: string | null
+          frontend_url?: string | null
+          id?: string
+          jurisdiction?: string | null
+          last_page?: string | null
+          name?: string
+          name_abbreviation?: string | null
+          preview?: string[] | null
+          reporter?: Json | null
+          updated_at?: string | null
+          url?: string | null
+          volume?: Json | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
